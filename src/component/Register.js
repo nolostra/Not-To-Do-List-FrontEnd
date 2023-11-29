@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState('');
+  const [role, setRole] = useState('Employee');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -79,13 +79,16 @@ const Register = () => {
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="role">
               Role:
-              <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="role"
-                type="text"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-              />
+              <select
+                      className="form-select"
+                      value={role}
+                      onChange={(e) => {
+                        setRole(e.target.value);
+                      }}
+                    >
+                      <option value="Employee">Employee</option>
+                      <option value="HRAdmin">HR Admin</option>
+                    </select>
             </label>
           </div>
           <div className="flex items-center justify-between">

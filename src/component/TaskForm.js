@@ -50,6 +50,7 @@ const TaskForm = ({ onSubmit, buttonText, initialTask }) => {
 
   return (
     <form className="task-form" onSubmit={handleSubmit}>
+      <h2 className="text-2xl font-semibold mb-4">Task Form</h2>
       <label className="form-label">
         Title:
         <input

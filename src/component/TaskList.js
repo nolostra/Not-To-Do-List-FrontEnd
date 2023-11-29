@@ -3,6 +3,7 @@ import AuthService from "../services/api";
 import TaskForm from "./TaskForm";
 import { UserContext } from "../contexts/UserContext";
 import {   toast } from "react-toastify";
+import Profile from './Profile';
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -22,7 +23,7 @@ const TaskList = () => {
       const token = await localStorage.getItem("token");
       // console.log("AuthToken =>", token);
       const response = await AuthService.getTasks(token);
-      // console.log("response => ", response.data[0]);
+      console.log("response => ", response.data[0]);
       setTasks(response.data);
     } catch (error) {
       console.error("Error fetching tasks:", error.message);
@@ -89,7 +90,36 @@ const TaskList = () => {
     setEditTitle(task.title)
     setEditingTask(task);
   };
-
+  const handleAck = async (id) =>{
+    try{
+      const token = await localStorage.getItem("token");
+      const response = await AuthService.ackoledgeTask(id,token);
+      toast('Acknowledged Successfully', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
+    }catch(error){
+      toast("Server Error", {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+        });
+        
+    }finally{
+      fetchTasks();
+    }
+  }
   const handleCancelEdit = () => {
     setEditDescription(null)
     setEditDueDate(null)
@@ -101,11 +131,11 @@ const TaskList = () => {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case "low":
-        return "#33cc33"; // Light green
+        return "#FF6347"; // Light green
       case "medium":
-        return "#ffff00"; // Lemon chiffon
+        return "#9370DB"; // Lemon chiffon
       case "high":
-        return "#ff3300"; // Light coral
+        return "#4169E1"; // Light coral
       default:
         return "#fff"; // Default background color
     }
@@ -114,7 +144,7 @@ const TaskList = () => {
   return (
     <div className="task-list-container">
       <div className="task-list">
-        <h2>NOT to Do Task List</h2>
+        <h2 className="text-3xl font-bold mb-5">NOT to Do Task List</h2>
         <ul>
           {tasks.map((task) => (
             <li
@@ -195,6 +225,9 @@ const TaskList = () => {
                   <div>
                     <strong>Due Date:</strong> {task.dueDate}
                   </div>
+                  <div>
+                    <strong>Acknowledged Count:</strong> {task.acknowledgedBy.length}
+                  </div>
                   {user && user.role === "HRAdmin" && (
                     <div className="task-actions">
                       <button onClick={() => handleEdit(task)}>Edit</button>
@@ -203,12 +236,25 @@ const TaskList = () => {
                       </button>
                     </div>
                   )}
+                  {user && user.role === "Employee" && (
+                    <div className="task-actions">
+                      <button onClick={() => {
+                        handleAck(task._id)
+                      }}>Acknowledged</button>
+                    </div>
+                  )}
                 </div>
               )}
             </li>
           ))}
         </ul>
       </div>
+      <div className="profile-task-container">
+      <div className="profile-container">
+      {user && (
+          <Profile />
+        )}
+        </div>
       <div className="task-form-container">
         {user && user.role === "HRAdmin" && (
           <TaskForm
@@ -220,6 +266,7 @@ const TaskList = () => {
             initialTask={selectedTask}
           />
         )}
+      </div>
       </div>
     </div>
   );

@@ -3,11 +3,11 @@ import axios from "axios";
 const API_URL = "http://localhost:5000/api";
 
 const AuthService = {
-  signup: async (userData) => {
+  register: async (userData) => {
     // Simulate a signup request to the backend
     try {
       // Replace the following line with an actual API call to your backend
-      const response = await fetch(`${API_URL}/api/register`, {
+      const response = await fetch(`${API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,17 +27,17 @@ const AuthService = {
     }
   },
 
-  getProfile: async () => {
+  getProfile: async (token) => {
     // Simulate a request to get user profile from the backend
     try {
       // Replace the following line with an actual API call to your backend
-      const response = await fetch(`${API_URL}/api/profile`, {
+      console.log("=>", token)
+      const response = await fetch(`${API_URL}/profile`, {
         method: "GET",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // Include the user's token
+          Authorization: `${token}`, // Include the user's token
         },
       });
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -97,6 +97,24 @@ const AuthService = {
       return response;
     } catch (error) {
       throw error;
+    }
+  },
+
+  ackoledgeTask: async(taskId,authToken) => {
+    try{
+      console.log(authToken)
+      const response = await axios.post(
+        `${API_URL}/acknowledge/${taskId}`,
+        null, 
+        {
+          headers: {
+            Authorization: authToken,
+          },
+        }
+      );
+         return response;
+    }catch(error) {
+      throw error
     }
   },
 
