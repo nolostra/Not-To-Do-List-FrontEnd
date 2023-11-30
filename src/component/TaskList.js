@@ -2,8 +2,8 @@ import React, { useEffect, useState, useContext } from "react";
 import AuthService from "../services/api";
 import TaskForm from "./TaskForm";
 import { UserContext } from "../contexts/UserContext";
-import {   toast } from "react-toastify";
-import Profile from './Profile';
+import { toast } from "react-toastify";
+import Profile from "./Profile";
 const TaskList = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -44,17 +44,20 @@ const TaskList = () => {
     try {
       // Assuming you have an `updateTask` function in your AuthService or another service
       const token = await localStorage.getItem("token");
-      const response = await AuthService.updateTask(editingTask._id, {
-        
-        "title":editTitle,
-        "description":editDescription,
-        "priority":editPriority,
-        "dueDate":editDueDate,
-      }, token);
+      const response = await AuthService.updateTask(
+        editingTask._id,
+        {
+          title: editTitle,
+          description: editDescription,
+          priority: editPriority,
+          dueDate: editDueDate,
+        },
+        token
+      );
 
       // Update the task in the local state
       fetchTasks();
-      toast('Task Updated Successfully', {
+      toast("Task Updated Successfully", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -63,11 +66,11 @@ const TaskList = () => {
         draggable: true,
         progress: undefined,
         theme: "dark",
-        });
+      });
       console.log("Task updated successfully:", response.data);
     } catch (error) {
       console.error("Error updating task:", error.message);
-      toast('Error updating task', {
+      toast("Error updating task", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -76,25 +79,25 @@ const TaskList = () => {
         draggable: true,
         progress: undefined,
         theme: "dark",
-        });
+      });
     } finally {
       // Clear the selected task
       setSelectedTask(null);
-      handleCancelEdit()
+      handleCancelEdit();
     }
   };
   const handleEdit = (task) => {
-    setEditDescription(task.description)
-    setEditDueDate(task.dueDate)
-    setEditPriority(task.priority)
-    setEditTitle(task.title)
+    setEditDescription(task.description);
+    setEditDueDate(task.dueDate);
+    setEditPriority(task.priority);
+    setEditTitle(task.title);
     setEditingTask(task);
   };
-  const handleAck = async (id) =>{
-    try{
+  const handleAck = async (id) => {
+    try {
       const token = await localStorage.getItem("token");
-      const response = await AuthService.ackoledgeTask(id,token);
-      toast('Acknowledged Successfully', {
+      const response = await AuthService.ackoledgeTask(id, token);
+      toast("Acknowledged Successfully", {
         position: "bottom-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -103,8 +106,8 @@ const TaskList = () => {
         draggable: true,
         progress: undefined,
         theme: "dark",
-        });
-    }catch(error){
+      });
+    } catch (error) {
       toast("Server Error", {
         position: "bottom-right",
         autoClose: 5000,
@@ -114,17 +117,16 @@ const TaskList = () => {
         draggable: true,
         progress: undefined,
         theme: "dark",
-        });
-        
-    }finally{
+      });
+    } finally {
       fetchTasks();
     }
-  }
+  };
   const handleCancelEdit = () => {
-    setEditDescription(null)
-    setEditDueDate(null)
-    setEditPriority(null)
-    setEditTitle(null)
+    setEditDescription(null);
+    setEditDueDate(null);
+    setEditPriority(null);
+    setEditTitle(null);
     setEditingTask(null);
   };
 
@@ -143,9 +145,10 @@ const TaskList = () => {
 
   return (
     <div className="task-list-container">
-      <div className="task-list">
-        <h2 className="text-3xl font-bold mb-5">NOT to Do Task List</h2>
-        <ul>
+      
+      <div class="flex justify-center flex-col items-center">
+         <div className="text-3xl font-bold mb-5">NOT to Do Task List</div>
+         <ul class="grid grid-rows-3 grid-flow-col grid-cols-2 gap-3 content-start">
           {tasks.map((task) => (
             <li
               key={task._id}
@@ -249,24 +252,23 @@ const TaskList = () => {
           ))}
         </ul>
       </div>
+       
+       
+        
       <div className="profile-task-container">
-      <div className="profile-container">
-      {user && (
-          <Profile />
-        )}
+        <div className="profile-container">{user && <Profile />}</div>
+        <div className="task-form-container">
+          {user && user.role === "HRAdmin" && (
+            <TaskForm
+              onSubmit={async () => {
+                // Reload or update the task list (if needed)
+                await fetchTasks();
+              }}
+              buttonText={selectedTask ? "Update Task" : "Add Task"}
+              initialTask={selectedTask}
+            />
+          )}
         </div>
-      <div className="task-form-container">
-        {user && user.role === "HRAdmin" && (
-          <TaskForm
-            onSubmit={async () => {
-              // Reload or update the task list (if needed)
-              await fetchTasks();
-            }}
-            buttonText={selectedTask ? "Update Task" : "Add Task"}
-            initialTask={selectedTask}
-          />
-        )}
-      </div>
       </div>
     </div>
   );

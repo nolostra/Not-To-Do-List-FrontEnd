@@ -1,0 +1,106 @@
+<div className="task-list">
+        {/* <h2 className="text-3xl font-bold mb-5">NOT to Do Task List</h2> */}
+        <ul>
+          {tasks.map((task) => (
+            <li
+              key={task._id}
+              className="task-item"
+              style={{ backgroundColor: getPriorityColor(task.priority) }}
+            >
+              {editingTask === task ? (
+                // Render edit form
+                <div>
+                  <label className="form-label">
+                    Title:
+                    <input
+                      type="text"
+                      value={editTitle ? editTitle : task.title}
+                      onChange={(e) => {
+                        const inputValue = e.target.value.trim(); // Remove leading and trailing whitespaces
+                        setEditTitle(inputValue.length > 0 ? inputValue : " ");
+                      }}
+                    />
+                  </label>
+                  <label className="form-label">
+                    Description:
+                    <input
+                      type="text"
+                      value={
+                        editDescription ? editDescription : task.description
+                      }
+                      onChange={(e) => {
+                        /* Implement logic to update description */
+                        const inputValue = e.target.value.trim();
+                        setEditDescription(inputValue.length > 0 ? inputValue : " ");
+                      }}
+                    />
+                  </label>
+                  <label className="form-label">
+                    Priority:
+                    <select
+                      className="form-select"
+                      value={editPriority ? editPriority : task.priority}
+                      onChange={(e) => {
+                        setEditPriority(e.target.value);
+                      }}
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </label>
+                  <label className="form-label">
+                    Due Date:
+                    <input
+                      type="date"
+                      value={editDueDate ? editDueDate : task.dueDate}
+                      onChange={(e) => {
+                        /* Implement logic to update description */
+                        setEditDueDate(e.target.value);
+                      }}
+                    />
+                  </label>
+
+                  {/* Add inputs for other properties like priority and dueDate */}
+                  <button onClick={handleUpdate}>Save</button>
+                  <button onClick={handleCancelEdit}>Cancel</button>
+                </div>
+              ) : (
+                // Render task details
+                <div>
+                  <div>
+                    <strong>Title:</strong> {task.title}
+                  </div>
+                  <div>
+                    <strong>Description:</strong> {task.description}
+                  </div>
+                  <div>
+                    <strong>Priority:</strong> {task.priority}
+                  </div>
+                  <div>
+                    <strong>Due Date:</strong> {task.dueDate}
+                  </div>
+                  <div>
+                    <strong>Acknowledged Count:</strong> {task.acknowledgedBy.length}
+                  </div>
+                  {user && user.role === "HRAdmin" && (
+                    <div className="task-actions">
+                      <button onClick={() => handleEdit(task)}>Edit</button>
+                      <button onClick={() => handleDelete(task._id)}>
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                  {user && user.role === "Employee" && (
+                    <div className="task-actions">
+                      <button onClick={() => {
+                        handleAck(task._id)
+                      }}>Acknowledged</button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
